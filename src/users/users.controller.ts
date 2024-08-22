@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { ParseShortIdPipe } from '../pipes/parse-shortid.pipe';
 
 @Controller('users')
 export class UsersController {
@@ -14,7 +15,7 @@ export class UsersController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
+    findOne(@Param('id', ParseShortIdPipe) id: string) {
         return this.usersService.findOne(id)
     }
 
@@ -24,12 +25,12 @@ export class UsersController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() userUpdate: { name?: string, email?: string, password?: string, role?: 'ADMIN' | 'MANAGER' | 'USER' }) {
+    update(@Param('id', ParseShortIdPipe) id: string, @Body() userUpdate: { name?: string, email?: string, password?: string, role?: 'ADMIN' | 'MANAGER' | 'USER' }) {
         return this.usersService.update(id, userUpdate)
     }
 
     @Delete(':id')
-    delete(@Param('id') id: string) {
+    delete(@Param('id', ParseShortIdPipe) id: string) {
         return this.usersService.delete(id)
     }
 }
