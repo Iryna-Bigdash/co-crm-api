@@ -2,7 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { generateId } from '../utils/id-generator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user-dto';
-import { NotFoundException } from '@nestjs/common';
+import { NotFoundException, BadRequestException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 
 @Injectable()
@@ -11,21 +12,21 @@ export class UsersService {
         {
             'id': "OtAYnQD6W",
             'name': 'Ira',
-            'email': 'imcode@connected.com,',
+            'email': 'imcode@connected.com',
             'role': 'ADMIN',
             'password': '123456'
         },
         {
             'id': 'WtAYnQD6W',
             'name': 'Ben',
-            'email': 'ben@connected.com,',
+            'email': 'ben@connected.com',
             'role': 'USER',
             'password': '123456'
         },
         {
             'id': 'PtAYnQD6W',
             'name': 'Kate',
-            'email': 'kate@connected.com,',
+            'email': 'kate@connected.com',
             'role': 'MANAGER',
             'password': '123456'
         }
@@ -55,10 +56,21 @@ export class UsersService {
         return user
     }
 
-    create(createUserDto: CreateUserDto) {
+    async create(createUserDto: CreateUserDto) {
+        const { password, email, ...userData } = createUserDto;
+
+        const existingUser = this.users.find(user => user.email === email);
+        if (existingUser) {
+            throw new BadRequestException('User with this email already exists');
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = {
             id: generateId(),
-            ...createUserDto,
+            password: hashedPassword,
+            email,
+            ...userData,
         }
         this.users.push(newUser)
 
