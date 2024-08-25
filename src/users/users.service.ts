@@ -29,6 +29,13 @@ export class UsersService {
             'email': 'kate@connected.com',
             'role': 'MANAGER',
             'password': '123456'
+        },
+        {
+            "id": "uepxzwvVT",
+            "password": "$2b$10$Rbp5BbqlTeoT7B.i5CYLrOwyhq3ZKgvm6LPS5mb.jyPdqik6/dI2O",
+            "email": "tommy@code.com",
+            "name": "Tommy",
+            "role": "ADMIN"
         }
     ]
 
