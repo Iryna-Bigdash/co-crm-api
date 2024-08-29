@@ -43,6 +43,7 @@ export class AllExceptionsFilter extends BaseExceptionFilter{
 
         this.logger.error(MyResponseObj.response, AllExceptionsFilter.name)
 
-        super.catch(exception, host)
+        super.catch(exception, host
+            )
     }
 }
