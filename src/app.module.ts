@@ -7,10 +7,12 @@ import { EmployeesModule } from './employees/employees.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { MyLoggerModule } from './my-logger/my-logger.module';
+import { CompanyModule } from './company/company.module';
 
 @Module({
   imports: [
-    UsersModule, 
+    UsersModule,
+    CompanyModule, 
     DatabaseModule, 
     EmployeesModule, 
     ThrottlerModule.forRoot([{
