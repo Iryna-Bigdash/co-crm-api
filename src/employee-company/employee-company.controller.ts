@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { EmployeeCompanyService } from './employee-company.service';
 import { AssignCompaniesDto } from './dto/assign-companies.dto';
 
@@ -10,4 +10,16 @@ export class EmployeeCompanyController {
   async assignCompaniesToEmployee(@Body() assignDto: AssignCompaniesDto) {
     return this.employeeCompanyService.assignCompanies(assignDto.employeeId, assignDto.companyIds);
   }
+
+  @Get(':employeeId')
+    async findAllCompaniesByEmployee(@Param('employeeId') employeeId: string) {
+        return this.employeeCompanyService.findCompaniesByEmployee(employeeId);
+    }
+
+   @Get()  
+    async findAllCompaniesWithEmployees() {
+        return this.employeeCompanyService.findAllCompaniesWithEmployees();
+    }  
+
+
 }

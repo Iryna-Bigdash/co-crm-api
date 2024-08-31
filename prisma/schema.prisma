@@ -45,7 +45,7 @@ model EmployeeCompany {
   company   Company @relation(fields: [companyId], references: [id])
   companyId String
 
-  @@id([employeeId, companyId]) // Композитний первинний ключ
+  @@id([employeeId, companyId])
 }
 
 enum Role {
