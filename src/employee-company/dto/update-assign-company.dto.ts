@@ -1,4 +1,9 @@
-import { AssignCompaniesDto } from './assign-companies.dto'
-import { PartialType } from '@nestjs/mapped-types'
+import { IsUUID } from 'class-validator';
 
-export class UpdateUserDto extends PartialType(AssignCompaniesDto) {}
+export class UpdateAssignCompanyDto {
+  @IsUUID()
+  employeeId: string;
+
+  @IsUUID()
+  companyId: string;
+}
