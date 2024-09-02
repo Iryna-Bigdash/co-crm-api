@@ -27,7 +27,7 @@ model Company {
   status        CompanyStatus
   joinedDate    DateTime
   hasPromotions Boolean
-  avatar        String? // Поле може бути порожнім (необов'язкове)
+  avatar        String?
   categoryId    String
   categoryTitle String
   countryId     String
@@ -35,7 +35,18 @@ model Company {
   createdAt     DateTime      @default(now())
   updatedAT     DateTime      @updatedAt
 
-  employees EmployeeCompany[] // Зв'язок з таблицею Employee через проміжну таблицю EmployeeCompany
+  employees  EmployeeCompany[] // Зв'язок з таблицею Employee через проміжну таблицю EmployeeCompany
+  Promotions Promotions[]
+}
+
+model Promotions {
+  id          String  @id @unique @default(uuid())
+  title       String
+  description String
+  discount    Int
+  companyId   String
+  company     Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  avatar      String?
 }
 
 model EmployeeCompany {
