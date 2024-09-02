@@ -3,7 +3,7 @@ import { UsersService } from './users.service';
 import { ValidationPipe } from '@nestjs/common';
 import { ParseShortIdPipe } from '../pipes/parse-shortid.pipe';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user-dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('users')
 export class UsersController {
