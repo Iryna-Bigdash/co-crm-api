@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { MyLoggerModule } from './my-logger/my-logger.module';
 import { CompanyModule } from './company/company.module';
 import { EmployeeCompanyModule } from './employee-company/employee-company.module';
+import { PromotionsModule } from './promotions/promotions.module';
 
 @Module({
   imports: [
@@ -27,7 +28,7 @@ import { EmployeeCompanyModule } from './employee-company/employee-company.modul
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule],
+  ]), MyLoggerModule, PromotionsModule],
   controllers: [AppController],
   providers: [AppService, {
     provide:APP_GUARD,
