@@ -20,7 +20,7 @@ import { UpdateAssignCompanyDto } from './dto/update-assign-company.dto';
 @Controller('employee-company')
 export class EmployeeCompanyController {
     constructor(
-        private readonly employeeCompanyService: EmployeeCompanyService,
+        private readonly employeeCompanyService: EmployeeCompanyService
     ) { }
 
     @Post()

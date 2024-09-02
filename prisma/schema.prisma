@@ -47,6 +47,8 @@ model Promotions {
   companyId   String
   company     Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   avatar      String?
+
+  @@index([companyId])
 }
 
 model EmployeeCompany {

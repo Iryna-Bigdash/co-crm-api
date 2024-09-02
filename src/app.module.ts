@@ -18,6 +18,7 @@ import { PromotionsModule } from './promotions/promotions.module';
     DatabaseModule, 
     EmployeesModule, 
     EmployeeCompanyModule,
+    PromotionsModule,
     ThrottlerModule.forRoot([{
       name: 'short',
       ttl: 1000,
@@ -28,7 +29,7 @@ import { PromotionsModule } from './promotions/promotions.module';
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule, PromotionsModule],
+  ]), MyLoggerModule ],
   controllers: [AppController],
   providers: [AppService, {
     provide:APP_GUARD,
