@@ -3,10 +3,9 @@ import { Prisma, CompanyStatus } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import * as shortid from 'shortid';
 
-
 @Injectable()
 export class CompanyService {
-  constructor(private readonly databaseService: DatabaseService) { }
+  constructor(private readonly databaseService: DatabaseService) {}
 
   private async ensureCompanyExists(id: string): Promise<void> {
     const selectCompany = await this.databaseService.company.findUnique({
@@ -24,16 +23,15 @@ export class CompanyService {
 
     const newCompany = {
       id,
-      ...companyData
-    }
+      ...companyData,
+    };
 
     return this.databaseService.company.create({
-      data: newCompany
-    })
+      data: newCompany,
+    });
   }
 
   async findAll(status?: CompanyStatus) {
-
     return this.databaseService.company.findMany({
       where: status ? { status } : undefined,
     });
@@ -47,6 +45,14 @@ export class CompanyService {
     });
   }
 
+  async findByTitle(title: string) {
+    const companies = await this.databaseService.company.findMany({
+      where: { title },
+    });
+
+    return companies.length ? companies[0] : null;
+  }
+
   async update(id: string, updateCompanyDto: Prisma.CompanyUpdateInput) {
     await this.ensureCompanyExists(id);
 
@@ -57,13 +63,10 @@ export class CompanyService {
   }
 
   async remove(id: string) {
-    await this.ensureCompanyExists(id)
+    await this.ensureCompanyExists(id);
 
     return this.databaseService.company.delete({
-      where: { id }
-    })
+      where: { id },
+    });
   }
-
 }
-
-

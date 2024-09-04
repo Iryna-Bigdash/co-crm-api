@@ -1,54 +1,58 @@
-import { Body, Controller, Post, Get, Query, Param, ValidationPipe, NotFoundException } from '@nestjs/common';
-import { PromotionsService } from './promotions.service';
+import { Body, Controller, Post, Get, Query, Param, ValidationPipe, NotFoundException, Patch, Delete } from '@nestjs/common';
 import { CreatePromotionDTO } from './dto/create-promotion.dto';
 import { UpdatePromotionDTO } from './dto/update-promotion.dto';
 import { CompanyService } from '../company/company.service';
-
-//create promotion +
-//get all promotions for all company +
-//get promotions for company +
-//get current promotion +
-//update current promotion +
-//delete current promotion
+import { PromotionsService } from './promotions.service';
 
 @Controller('promotions')
 export class PromotionsController {
-   constructor( private readonly promotionsService: PromotionsService ){}
-   
-   //create promotion
-   @Post()
-   async create(@Body() createDto: CreatePromotionDTO ){
-    return this.promotionsService.create(createDto);
-   }
+    constructor(
+        private readonly promotionsService: PromotionsService,
+        private readonly companyService: CompanyService
+    ) { }
 
-//    @Get()
-//    async find(@Query('title') title?: string) {
-//      if (title) {
-//        const company = await this.companyService.findByTitle(title);
+    @Post()
+    async create(@Body() createDto: CreatePromotionDTO) {
+        return this.promotionsService.create(createDto);
+    }
 
-//        if (company) {
-//          return this.promotionsService.findByCompanyId(company.id);
-//        }
+    @Get()
+    async find(@Query('title') title?: string) {
+        if (title) {
+            const company = await this.companyService.findByTitle(title);
 
-//        throw new NotFoundException('Company not found');
-//      }
-     
-//      return this.promotionsService.findAll();
-//    }
+            if (company) {
+                return this.promotionsService.findByCompanyId(company.id);
+            }
 
-//    @Get(':id')
-//     findOne(@Param('id') id: string) {
-//         return this.promotionsService.findOne(id)
-//     }
+            throw new NotFoundException('Company not found');
+        }
 
-//     @Patch(':id')
-//     update(@Param('id') id: string, @Body(ValidationPipe) UpdatePromotionDTO: UpdatePromotionDTO ) {
-//         return this.promotionsService.update(id, UpdatePromotionDTO)
-//     }
+        return this.promotionsService.findAll();
+    }
 
-//     @Delete(':id')
-//     delete(@Param('id') id: string) {
-//         return this.promotionsService.delete(id)
-//     }
+    @Get(':id')
+    async findOne(@Param('id') id: string) {
+        const promotion = await this.promotionsService.findOne(id);
 
+        if (!promotion) {
+            throw new NotFoundException('Promotion not found');
+        }
+
+        return promotion;
+    }
+
+    @Patch(':id')
+    async update(@Param('id') id: string, @Body() updateDto: UpdatePromotionDTO) {
+        const data = this.promotionsService.update(id, updateDto);
+
+        return data;
+    }
+
+    @Delete(':id')
+    async remove(@Param('id') id: string) {
+        await this.promotionsService.remove(id);
+
+        return { message: 'Promotion removed successfully' };
+    }
 }
