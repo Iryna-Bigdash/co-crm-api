@@ -17,7 +17,7 @@ model Employee {
   createdAt DateTime @default(now())
   updatedAT DateTime @updatedAt
 
-  companies EmployeeCompany[] // Зв'язок з таблицею Company через проміжну таблицю EmployeeCompany
+  companies EmployeeCompany[]
 }
 
 model Company {
@@ -35,7 +35,7 @@ model Company {
   createdAt     DateTime      @default(now())
   updatedAT     DateTime      @updatedAt
 
-  employees  EmployeeCompany[] // Зв'язок з таблицею Employee через проміжну таблицю EmployeeCompany
+  employees  EmployeeCompany[]
   Promotions Promotions[]
 }
 
