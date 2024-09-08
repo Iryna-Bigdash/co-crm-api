@@ -10,6 +10,9 @@ import { MyLoggerModule } from './my-logger/my-logger.module';
 import { CompanyModule } from './company/company.module';
 import { EmployeeCompanyModule } from './employee-company/employee-company.module';
 import { PromotionsModule } from './promotions/promotions.module';
+import { CategoriesController } from './categories/categories.controller';
+import { CategoriesService } from './categories/categories.service';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -29,11 +32,11 @@ import { PromotionsModule } from './promotions/promotions.module';
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule ],
-  controllers: [AppController],
+  ]), MyLoggerModule, CategoriesModule ],
+  controllers: [AppController, CategoriesController],
   providers: [AppService, {
     provide:APP_GUARD,
     useClass:ThrottlerGuard
-  }],
+  }, CategoriesService],
 })
 export class AppModule {}

@@ -29,7 +29,7 @@ model Company {
   hasPromotions Boolean
   avatar        String?
   categoryId    String
-  categoryTitle String
+  categoryTitle Category
   countryId     String
   countryTitle  String
   createdAt     DateTime      @default(now())
@@ -72,4 +72,19 @@ enum CompanyStatus {
   notActive
   pending
   suspended
+}
+
+enum Category {
+  IT
+  Finance
+  Manufacturing
+  Trade
+  Services
+  Healthcare
+  Construction
+  Prodact
+  Tourism
+  Health
+  Media
+  Energy
 }
