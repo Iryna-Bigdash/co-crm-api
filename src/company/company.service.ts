@@ -47,7 +47,7 @@ export class CompanyService {
 
   async findByTitle(title: string) {
     const companies = await this.databaseService.company.findMany({
-      where: { title },
+      where: { title: { contains: title, mode: 'insensitive' } }, // Пошук без врахування регістру
     });
 
     return companies.length ? companies[0] : null;
