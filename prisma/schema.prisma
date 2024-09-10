@@ -20,18 +20,24 @@ model Employee {
   companies EmployeeCompany[]
 }
 
+model Category {
+  id        String        @id @unique @default(uuid())
+  title     CategoryTitle @unique
+  companies Company[]
+}
+
 model Company {
   id            String        @id @unique @default(uuid())
   title         String        @unique
   description   String
   status        CompanyStatus
   joinedDate    DateTime
-  hasPromotions Boolean
+  hasPromotions Boolean       @default(false)
   avatar        String?
   categoryId    String
-  categoryTitle Category
+  category      Category      @relation(fields: [categoryId], references: [id])
   countryId     String
-  countryTitle  String
+  country       Country       @relation(fields: [countryId], references: [id])
   createdAt     DateTime      @default(now())
   updatedAT     DateTime      @updatedAt
 
@@ -74,7 +80,7 @@ enum CompanyStatus {
   suspended
 }
 
-enum Category {
+enum CategoryTitle {
   IT
   Finance
   Manufacturing
@@ -82,9 +88,18 @@ enum Category {
   Services
   Healthcare
   Construction
-  Prodact
+  Product
   Tourism
-  Health
   Media
   Energy
+}
+
+model Country {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  latitude  Float
+  longitude Float
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  companies Company[]
 }

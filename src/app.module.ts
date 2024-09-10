@@ -13,6 +13,7 @@ import { PromotionsModule } from './promotions/promotions.module';
 import { CategoriesController } from './categories/categories.controller';
 import { CategoriesService } from './categories/categories.service';
 import { CategoriesModule } from './categories/categories.module';
+import { CountriesModule } from './countries/countries.module';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { CategoriesModule } from './categories/categories.module';
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule, CategoriesModule ],
+  ]), MyLoggerModule, CategoriesModule, CountriesModule ],
   controllers: [AppController, CategoriesController],
   providers: [AppService, {
     provide:APP_GUARD,
