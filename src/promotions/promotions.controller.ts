@@ -11,9 +11,12 @@ export class PromotionsController {
         private readonly companyService: CompanyService
     ) { }
 
-    @Post()
-    async create(@Body() createDto: CreatePromotionDTO) {
-        return this.promotionsService.create(createDto);
+    @Post(':id')
+    async create(
+        @Param('id') companyId: string,
+        @Body() createDto: CreatePromotionDTO
+    ) {
+        return this.promotionsService.create(companyId, createDto);
     }
 
     @Get()
@@ -29,6 +32,17 @@ export class PromotionsController {
         }
 
         return this.promotionsService.findAll();
+    }
+
+    @Get('company/:companyId')
+    async findPromotionsByCompanyId(@Param('companyId') companyId: string) {
+        const promotions = await this.promotionsService.findByCompanyId(companyId);
+
+        if (!promotions || promotions.length === 0) {
+            throw new NotFoundException('No promotions found for this company');
+        }
+
+        return promotions;
     }
 
     @Get(':id')

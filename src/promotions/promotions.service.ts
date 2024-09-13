@@ -9,32 +9,58 @@ import { UpdatePromotionDTO } from './dto/update-promotion.dto';
 export class PromotionsService {
     constructor(private readonly databaseService: DatabaseService) { }
 
-    async create(createPromotionDTO: CreatePromotionDTO) {
-        const { companyId, ...promotionData } = createPromotionDTO;
-        const id = shortid.generate();
+    async create(companyId: string, createDto: CreatePromotionDTO) {
 
-        const newPromotion: Prisma.PromotionsCreateInput = {
-            id,
-            ...promotionData,
-            company: {
-                connect: { id: companyId },
+        const newPromotion = await this.databaseService.promotions.create({
+            data: {
+                title: createDto.title,
+                description: createDto.description,
+                discount: createDto.discount,
+                company: {
+                    connect: { id: companyId },
+                },
             },
-        };
-
-        return await this.databaseService.promotions.create({
-            data: newPromotion,
         });
+
+        return newPromotion
     }
 
     async findByCompanyId(companyId: string) {
         return this.databaseService.promotions.findMany({
-            where: { companyId },
+            where: {
+                companyId: companyId,
+            },
+            include: {
+                company: {
+                    select: {
+                        title: true,
+                    },
+                },
+            },
         });
     }
 
     async findAll() {
-        return this.databaseService.promotions.findMany();
+        const promotions = await this.databaseService.promotions.findMany({
+            include: {
+                company: {
+                    select: {
+                        title: true,
+                    },
+                },
+            },
+        });
+
+        return promotions.map(promotion => ({
+            id: promotion.id,
+            title: promotion.title,
+            description: promotion.description,
+            discount: promotion.discount,
+            companyId: promotion.companyId,
+            companyTitle: promotion.company.title,
+        }));
     }
+
 
     async findOne(id: string) {
         const promotion = await this.databaseService.promotions.findUnique({

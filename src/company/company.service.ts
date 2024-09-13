@@ -1,5 +1,5 @@
 import { NotFoundException, Injectable } from '@nestjs/common';
-import { Prisma, CompanyStatus, Category } from '@prisma/client';
+import { Prisma, CompanyStatus } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import { CreateCompanyDto } from './dto/company-create.dto'
 
