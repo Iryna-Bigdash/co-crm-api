@@ -14,6 +14,7 @@ import { CategoriesController } from './categories/categories.controller';
 import { CategoriesService } from './categories/categories.service';
 import { CategoriesModule } from './categories/categories.module';
 import { CountriesModule } from './countries/countries.module';
+import { SummaryStatsModule } from './summary-stats/summary-stats.module';
 
 @Module({
   imports: [
@@ -33,7 +34,7 @@ import { CountriesModule } from './countries/countries.module';
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule, CategoriesModule, CountriesModule ],
+  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule ],
   controllers: [AppController, CategoriesController],
   providers: [AppService, {
     provide:APP_GUARD,
