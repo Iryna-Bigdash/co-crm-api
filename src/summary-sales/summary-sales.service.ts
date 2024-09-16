@@ -17,6 +17,13 @@ export class SummarySalesService {
       sold: 980,
       income: 52672,
     },
+    {
+      "id": "1tAYnQD6Y",
+      "companyId": "b4ra0MFdx",
+      "companyTitle": "Italy",
+      "sold": 3,
+      "income": 2175
+    }
   ];
 
   findAll() {
