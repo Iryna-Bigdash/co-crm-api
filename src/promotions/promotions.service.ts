@@ -1,7 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
-import * as shortid from 'shortid';
 import { CreatePromotionDTO } from './dto/create-promotion.dto';
 import { UpdatePromotionDTO } from './dto/update-promotion.dto';
 
