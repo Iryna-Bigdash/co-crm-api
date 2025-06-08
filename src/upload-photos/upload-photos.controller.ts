@@ -19,7 +19,7 @@ export class UploadController {
 
   @Post()
   @UseInterceptors(
-    FileInterceptor('file', {
+    FileInterceptor('avatar', { 
       storage: diskStorage({
         destination: (req, file, cb) => {
           const uploadPath = './uploads';
@@ -31,21 +31,20 @@ export class UploadController {
           cb(null, uploadPath);
         },
         filename: (req, file, cb) => {
-          // Зберігаємо з тимчасовим унікальним іменем
           const timestamp = Date.now();
           const ext = file.originalname.split('.').pop();
           cb(null, `temp-${timestamp}.${ext}`);
         },
       }),
       fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+        const allowedMimeTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
 
         if (allowedMimeTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
           cb(
             new BadRequestException(
-              `Непідтримуваний тип файлу: ${file.mimetype}. Дозволені типи: PDF, JPG, PNG.`,
+              `Непідтримуваний тип файлу: ${file.mimetype}. Дозволені типи: PDF, JPG, PNG, WEBP.`,
             ),
             false,
           );
