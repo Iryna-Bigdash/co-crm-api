@@ -20,6 +20,14 @@ export class PromotionsService {
             },
         });
 
+        await this.databaseService.company.update({
+            where: { id: companyId },
+            data: {
+              hasPromotions: true,
+            },
+          });
+
+          
         return newPromotion
     }
 
@@ -91,10 +99,26 @@ export class PromotionsService {
     }
 
     async remove(id: string) {
-        await this.findOne(id);
-
-        return this.databaseService.promotions.delete({
-            where: { id },
+        const promotion = await this.findOne(id);
+        await this.databaseService.promotions.delete({
+          where: { id },
         });
-    }
+      
+        const remaining = await this.databaseService.promotions.count({
+          where: {
+            companyId: promotion.companyId,
+          },
+        });
+      
+        if (remaining === 0) {
+          await this.databaseService.company.update({
+            where: { id: promotion.companyId },
+            data: {
+              hasPromotions: false,
+            },
+          });
+        }
+      
+        return { message: 'Promotion removed' };
+      }
 }
