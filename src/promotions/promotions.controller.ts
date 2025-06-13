@@ -38,11 +38,11 @@ export class PromotionsController {
     async findPromotionsByCompanyId(@Param('companyId') companyId: string) {
         const promotions = await this.promotionsService.findByCompanyId(companyId);
 
-        if (!promotions || promotions.length === 0) {
-            throw new NotFoundException('No promotions found for this company');
-        }
+        // if (!promotions || promotions.length === 0) {
+        //     throw new NotFoundException('No promotions found for this company');
+        // }
 
-        return promotions;
+        return promotions || [];
     }
 
     @Get(':id')

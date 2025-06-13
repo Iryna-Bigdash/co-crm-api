@@ -22,4 +22,21 @@ export class UploadService {
       throw new Error(`File ${oldFilename} не знайдено`);
     }
   }
+
+  removeAvatar(avatarUrl: string): void {
+    const uploadDir = join(process.cwd(), 'uploads');
+
+    const filename = avatarUrl.split('/').pop();
+    if (!filename) {
+      throw new Error('Невалідне посилання на файл');
+    }
+
+    const filePath = join(uploadDir, filename);
+
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    } else {
+      throw new Error(`Файл ${filename} не знайдено`);
+    }
+  }
 }

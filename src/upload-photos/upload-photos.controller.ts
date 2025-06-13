@@ -12,14 +12,15 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
 import { UploadService } from './upload-photos.service';
+import { CompanyService } from '../company/company.service';
 
 @Controller('upload')
 export class UploadController {
-  constructor(private readonly uploadService: UploadService) {}
+  constructor (private readonly uploadService: UploadService) {}
 
   @Post()
   @UseInterceptors(
-    FileInterceptor('avatar', { 
+    FileInterceptor('avatar', {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const uploadPath = './uploads';
@@ -72,7 +73,7 @@ export class UploadController {
     this.uploadService.renameFile(file.filename, newFileName);
 
     return {
-      message: '✅ Файл збережено успішно',
+      message: '✅ File successfully saved',
       ...this.uploadService.getFileResponse(newFileName),
     };
   }

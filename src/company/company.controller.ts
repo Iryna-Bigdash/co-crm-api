@@ -1,13 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Ip } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, Ip, NotFoundException } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { Prisma, CompanyStatus } from '@prisma/client';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { MyLoggerService } from 'src/my-logger/my-logger.service';
 import { CreateCompanyDto } from './dto/company-create.dto';
+import { UploadService } from 'src/upload-photos/upload-photos.service';
 
 @Controller('company')
 export class CompanyController {
-  constructor(private readonly companyService: CompanyService) { }
+  constructor(
+    private readonly companyService: CompanyService,
+    private readonly uploadService: UploadService
+  ) { }
 
   private readonly logger = new MyLoggerService(CompanyController.name);
 
@@ -38,7 +42,21 @@ export class CompanyController {
 
   @Throttle({ long: { ttl: 60000, limit: 50 } })
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string) {
+    const company = await this.companyService.findOne(id); // або findById(id)
+
+    if (!company) {
+      throw new NotFoundException(`Company with ID ${id} not found`);
+    }
+
+    if (company.avatar) {
+      try {
+        await this.uploadService.removeAvatar(company.avatar); // ← видалення файлу
+      } catch (e) {
+        console.warn('⚠️ File was not removed', { error: e.message });
+      }
+    }
+
     return this.companyService.remove(id);
   }
 }
