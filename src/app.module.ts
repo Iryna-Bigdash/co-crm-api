@@ -17,6 +17,7 @@ import { CountriesModule } from './countries/countries.module';
 import { SummaryStatsModule } from './summary-stats/summary-stats.module';
 import { SummarySalesModule } from './summary-sales/summary-sales.module';
 import { UploadModule } from './upload-photos/upload-photos.module';
+import { DocumentsUploadModule } from './documents-upload/documents-upload.module';
  
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { UploadModule } from './upload-photos/upload-photos.module';
     EmployeeCompanyModule,
     PromotionsModule,
     UploadModule,
+    DocumentsUploadModule,
     ThrottlerModule.forRoot([{
       name: 'short',
       ttl: 1000,
@@ -37,7 +39,7 @@ import { UploadModule } from './upload-photos/upload-photos.module';
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule, SummarySalesModule, UploadModule ],
+  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule, SummarySalesModule, UploadModule, DocumentsUploadModule ],
   controllers: [AppController, CategoriesController],
   providers: [AppService, {
     provide:APP_GUARD,
