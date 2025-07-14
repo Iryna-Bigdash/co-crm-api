@@ -12,7 +12,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as fs from 'fs';
 import { UploadService } from './upload-photos.service';
-import { CompanyService } from '../company/company.service';
 
 @Controller('upload')
 export class UploadController {
@@ -77,4 +76,6 @@ export class UploadController {
       ...this.uploadService.getFileResponse(newFileName),
     };
   }
+
+  
 }

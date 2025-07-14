@@ -1,42 +1,53 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import * as fs from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
 
 @Injectable()
 export class DocumentsUploadService {
+  private readonly uploadDir = join(process.cwd(), 'uploads', 'documents');
+
   getFileResponse(filename: string) {
     return {
       filename,
-      path: `/uploads/documents/${filename}`,
+      url: `/uploads/documents/${filename}`, // саме так, бо роздається як статична папка
     };
   }
 
-  renameFile(oldFilename: string, newFilename: string): void {
-    const uploadDir = join(process.cwd(), 'uploads', 'documents');
-    const oldPath = join(uploadDir, oldFilename);
-    const newPath = join(uploadDir, newFilename);
-
-    if (fs.existsSync(oldPath)) {
-      fs.renameSync(oldPath, newPath);
-    } else {
-      throw new Error(`File ${oldFilename} не знайдено`);
-    }
+  getCompanyDocuments(companyId: string) {
+    const safeCompanyId = companyId.replace(/[^\w\d_-]/g, '_');
+  
+    if (!fs.existsSync(this.uploadDir)) return [];
+  
+    const allFiles = fs.readdirSync(this.uploadDir);
+  
+    const matchedFiles = allFiles.filter((file) =>
+      file.startsWith(`${safeCompanyId}_`)
+    );
+  
+    return matchedFiles.map((filename) => this.getFileResponse(filename));
   }
 
-  removeAvatar(avatarUrl: string): void {
-    const uploadDir = join(process.cwd(), 'uploads');
+  // 🔄 Перейменовує тимчасовий файл у підсумковий
+  renameFile(oldFilename: string, newFilename: string): void {
+    const oldPath = join(this.uploadDir, basename(oldFilename));
+    const newPath = join(this.uploadDir, basename(newFilename));
 
-    const filename = avatarUrl.split('/').pop();
-    if (!filename) {
-      throw new Error('Невалідне посилання на файл');
+    if (!fs.existsSync(oldPath)) {
+      throw new NotFoundException(`Файл ${oldFilename} не знайдено`);
     }
 
-    const filePath = join(uploadDir, filename);
+    fs.renameSync(oldPath, newPath);
+  }
 
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    } else {
-      throw new Error(`Файл ${filename} не знайдено`);
+  // 🗑 Видаляє файл
+  removeFile(documentUrl: string): void {
+    const filename = basename(documentUrl); // захист від path traversal
+    const filePath = join(this.uploadDir, filename);
+
+    if (!fs.existsSync(filePath)) {
+      throw new NotFoundException(`Файл ${filename} не знайдено`);
     }
+
+    fs.unlinkSync(filePath);
   }
 }
