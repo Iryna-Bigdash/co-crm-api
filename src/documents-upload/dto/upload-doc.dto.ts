@@ -4,12 +4,12 @@ export class UploadDocumentsDto {
   @IsString()
   @IsNotEmpty()
   companyId: string;
-  
+
   @IsNotEmpty()
   @IsString()
   companyTitle: string;
 
   @IsOptional()
   @IsString()
-  documentNumber?: string;
+  documentName?: string;
 }
