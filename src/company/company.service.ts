@@ -1,7 +1,8 @@
 import { NotFoundException, Injectable } from '@nestjs/common';
 import { Prisma, CompanyStatus } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
-import { CreateCompanyDto } from './dto/company-create.dto'
+import { CreateCompanyDto } from './dto/company-create.dto';
+import { buildAvatarUrl } from '../utils/get-avatar';
 
 import * as shortid from 'shortid';
 
@@ -68,87 +69,62 @@ export class CompanyService {
     });
   }
 
+async findAll(status?: CompanyStatus) {
+  const companies = await this.databaseService.company.findMany({
+    where: status ? { status } : undefined,
+    include: {
+      category: { select: { title: true } },
+      country:  { select: { name: true } },
+    },
+  });
 
-
-  // async findAll(status?: CompanyStatus) {
-  //   return this.databaseService.company.findMany({
-  //     where: status ? { status } : undefined,
-  //   });
-  // }
-
-  // async findOne(id: string) {
-  //   await this.ensureCompanyExists(id);
-
-  //   return this.databaseService.company.findUnique({
-  //     where: { id },
-  //   });
-  // }
-
-  async findAll(status?: CompanyStatus) {
-
-    const companies = await this.databaseService.company.findMany({
-      where: { status },
-      include: {
-        category: {
-          select: {
-            title: true,
-          },
-        },
-        country: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-  
-    return companies.map(company => ({
+  const result = await Promise.all(
+    companies.map(async (company) => ({
       id: company.id,
       title: company.title,
       description: company.description,
       status: company.status,
       joinedDate: company.joinedDate,
       hasPromotions: company.hasPromotions,
-      avatar: company.avatar,
+      // Відносний URL; якщо треба абсолютний — передай { absolute: true }
+      avatar: await buildAvatarUrl(company.avatar, company.updatedAT),
       categoryId: company.categoryId,
       categoryTitle: company.category.title,
       countryId: company.countryId,
       countryTitle: company.country.name,
       createdAt: company.createdAt,
       updatedAT: company.updatedAT,
-    }));
-  }
-  
-  
-  async findOne(id: string) {
-    const company = await this.databaseService.company.findUnique({
-      where: { id },
-      include: {
-        category: true,
-        country: true,
-      },
-    });
-  
-    if (!company) {
-      throw new Error('Company not found');
-    }
-  
-    return {
-      id: company.id,
-      title: company.title,
-      description: company.description,
-      status: company.status,
-      joinedDate: company.joinedDate,
-      hasPromotions: company.hasPromotions,
-      avatar: company.avatar,
-      categoryId: company.categoryId,
-      categoryTitle: company.category.title,
-      countryId: company.countryId,
-      countryTitle: company.country.name,
-      createdAt: company.createdAt,
-      updatedAT: company.updatedAT,
-    };
-  }
+    }))
+  );
+
+  return result;
+}
+
+async findOne(id: string) {
+  const company = await this.databaseService.company.findUnique({
+    where: { id },
+    include: { category: true, country: true },
+  });
+
+  if (!company) throw new NotFoundException('Company not found');
+
+  return {
+    id: company.id,
+    title: company.title,
+    description: company.description,
+    status: company.status,
+    joinedDate: company.joinedDate,
+    hasPromotions: company.hasPromotions,
+    avatar: await buildAvatarUrl(company.avatar, company.updatedAT),
+    categoryId: company.categoryId,
+    categoryTitle: company.category.title,
+    countryId: company.countryId,
+    countryTitle: company.country.name,
+    createdAt: company.createdAt,
+    updatedAT: company.updatedAT,
+  };
+}
+
   
   
 
