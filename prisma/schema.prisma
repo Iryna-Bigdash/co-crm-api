@@ -43,6 +43,7 @@ model Company {
 
   employees  EmployeeCompany[]
   Promotions Promotions[]
+  interactions  Interaction[]
 }
 
 model Promotions {
@@ -102,4 +103,36 @@ model Country {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   companies Company[]
+}
+
+
+enum InteractionType {
+  CALL
+  EMAIL
+  MEETING
+  OTHER
+}
+
+enum InteractionStatus {
+  PENDING
+  DONE
+  CANCELED
+}
+
+model Interaction {
+  id        String             @id @default(uuid())
+  companyId String
+  type      InteractionType
+  status    InteractionStatus  @default(PENDING)
+  date      DateTime
+  comment   String
+  nextCall  DateTime?
+  amount    Int?               // за бажанням можна Decimal
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, date])
 }
