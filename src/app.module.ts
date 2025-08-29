@@ -18,6 +18,7 @@ import { SummaryStatsModule } from './summary-stats/summary-stats.module';
 import { SummarySalesModule } from './summary-sales/summary-sales.module';
 import { UploadModule } from './upload-photos/upload-photos.module';
 import { DocumentsUploadModule } from './documents-upload/documents-upload.module';
+import { InteractionsModule } from './interactions/interactions.module';
  
 @Module({
   imports: [
@@ -39,7 +40,7 @@ import { DocumentsUploadModule } from './documents-upload/documents-upload.modul
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule, SummarySalesModule, UploadModule, DocumentsUploadModule ],
+  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule, SummarySalesModule, UploadModule, DocumentsUploadModule, InteractionsModule ],
   controllers: [AppController, CategoriesController],
   providers: [AppService, {
     provide:APP_GUARD,
