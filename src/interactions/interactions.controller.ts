@@ -12,8 +12,8 @@ import {
   export class InteractionsController {
     constructor(private readonly service: InteractionsService) {}
   
-    /** створити interaction для компанії */
-    @Post('/companies/:companyId')
+ 
+    @Post('company/:companyId')
     create(
       @Param('companyId') companyId: string,
       @Body() dto: CreateInteractionDto,
@@ -21,8 +21,7 @@ import {
       return this.service.create(companyId, dto);
     }
   
-    /** отримати interactions компанії (з фільтрами/пагінацією) */
-    @Get('/companies/:companyId')
+    @Get('company/:companyId')
     findByCompany(
       @Param('companyId') companyId: string,
       @Query() q: ListInteractionsDto,

@@ -8,10 +8,12 @@ export class SummaryStatsService {
     async getSummaryStats() {
         const promotionsCount = await this.databaseService.promotions.count();
         const categoriesCount = await this.databaseService.category.count();
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
         const newCompaniesCount = await this.databaseService.company.count({
             where: {
                 joinedDate: {
-                    gte: new Date(new Date().setDate(new Date().getDate() - 30)),
+                    gte: startOfMonth,
                 },
             },
         });

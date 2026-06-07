@@ -1,85 +1,74 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# co-crm-api (backend)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+REST API for the **co-crm** CRM application, built with **NestJS** and **Prisma** on top of PostgreSQL.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+The frontend lives in a separate repository: [`co-crm`](https://github.com/Iryna-Bigdash/co-crm).
 
-## Description
+## Tech stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [NestJS 10](https://nestjs.com/)
+- [Prisma 5](https://www.prisma.io/) ORM
+- PostgreSQL (e.g. [Neon](https://neon.tech/))
+- [Multer](https://github.com/expressjs/multer) for file uploads
+- [@nestjs/throttler](https://docs.nestjs.com/security/rate-limiting) for rate limiting
 
-## Project setup
+All routes are prefixed with `/api`. Uploaded files are served statically from `/uploads`.
 
-```bash
-$ npm install
-```
+## Domain model
 
-## Compile and run the project
+`Company`, `Category`, `Country`, `Promotions`, `Employee`, `EmployeeCompany`, `Interaction` — see `prisma/schema.prisma`.
+
+## Getting started
+
+### Prerequisites
+
+- Node.js 18+
+- A PostgreSQL database
+
+### Setup
 
 ```bash
-# development
-$ npm run start
+# 1. Install dependencies
+npm install
 
-# watch mode
-$ npm run start:dev
+# 2. Create your environment file
+cp .env.example .env
+# then fill in DATABASE_URL / DATABASE_URL_UNPOOLED
 
-# production mode
-$ npm run start:prod
+# 3. Generate the Prisma client and apply migrations
+npx prisma generate
+npx prisma migrate deploy
+
+# 4. Run the API (port 3000)
+npm run start:dev
 ```
 
-## Run tests
+The server starts on [http://localhost:3000](http://localhost:3000) (routes under `/api`).
 
-```bash
-# unit tests
-$ npm run test
+## Environment variables
 
-# e2e tests
-$ npm run test:e2e
+See `.env.example`. Copy it to `.env` and fill in real values:
 
-# test coverage
-$ npm run test:cov
-```
+| Variable | Description |
+| --- | --- |
+| `DATABASE_URL` | Pooled PostgreSQL connection string (runtime) |
+| `DATABASE_URL_UNPOOLED` | Direct PostgreSQL connection string (migrations) |
+| `PORT` | Port to listen on (optional, defaults to `3000`) |
 
-## Resources
+## Scripts
 
-Check out a few resources that may come in handy when working with NestJS:
+| Command | Description |
+| --- | --- |
+| `npm run start:dev` | Start in watch mode |
+| `npm run start:prod` | Run the compiled build (`dist/main`) |
+| `npm run build` | Compile the project |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run unit tests |
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Deployment
 
-## Support
+1. Provision a PostgreSQL database and set `DATABASE_URL` / `DATABASE_URL_UNPOOLED`.
+2. Run `npx prisma migrate deploy` against the production database.
+3. Build with `npm run build` and start with `npm run start:prod`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+> Note: the `uploads/` directory holds runtime user files and is git-ignored (only `.gitkeep` is committed). On ephemeral hosting, use external storage (e.g. S3) for persistence.

@@ -46,6 +46,10 @@ lerna-debug.log*
 .temp
 .tmp
 
+# user uploaded files (runtime data, must not be committed)
+/uploads/*
+!/uploads/.gitkeep
+
 # Runtime data
 pids
 *.pid
