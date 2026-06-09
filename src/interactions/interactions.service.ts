@@ -56,6 +56,29 @@ export class InteractionsService {
     return { items, total, skip: q.skip ?? 0, take: q.take ?? 20 };
   }
 
+  async findAll() {
+    const interactions = await this.db.interaction.findMany({
+      orderBy: { date: 'desc' },
+      include: {
+        company: { select: { title: true } },
+      },
+    });
+
+    return interactions.map((interaction) => ({
+      id: interaction.id,
+      companyId: interaction.companyId,
+      companyTitle: interaction.company.title,
+      type: interaction.type,
+      status: interaction.status,
+      date: interaction.date,
+      comment: interaction.comment,
+      nextCall: interaction.nextCall,
+      amount: interaction.amount,
+      createdAt: interaction.createdAt,
+      updatedAt: interaction.updatedAt,
+    }));
+  }
+
   async findOne(id: string) {
     const item = await this.db.interaction.findUnique({ where: { id } });
     if (!item) throw new NotFoundException('Interaction not found');

@@ -21,6 +21,12 @@ import {
       return this.service.create(companyId, dto);
     }
   
+    /** отримати всі interactions */
+    @Get()
+    findAll() {
+      return this.service.findAll();
+    }
+
     @Get('company/:companyId')
     findByCompany(
       @Param('companyId') companyId: string,
