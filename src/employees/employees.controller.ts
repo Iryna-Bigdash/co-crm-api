@@ -17,6 +17,11 @@ export class EmployeesController {
     return this.employeesService.create(createEmployeeDto);
   }
 
+  @Post('login')
+  async login(@Body() loginDto: { email: string; password: string }) {
+    return this.employeesService.validateCredentials(loginDto);
+  }
+
   @SkipThrottle({ default: false})
   @Get()
   findAll(@Ip() ip: string, @Query('role') role?: Role) {
@@ -40,5 +45,26 @@ export class EmployeesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.employeesService.remove(id);
+  }
+
+  @Post(':employeeId/companies/:companyId')
+  async assignCompany(
+    @Param('employeeId') employeeId: string,
+    @Param('companyId') companyId: string,
+  ) {
+    return this.employeesService.assignCompany(employeeId, companyId);
+  }
+
+  @Delete(':employeeId/companies/:companyId')
+  async unassignCompany(
+    @Param('employeeId') employeeId: string,
+    @Param('companyId') companyId: string,
+  ) {
+    return this.employeesService.unassignCompany(employeeId, companyId);
+  }
+
+  @Get(':employeeId/companies')
+  async getAssignedCompanies(@Param('employeeId') employeeId: string) {
+    return this.employeesService.getAssignedCompanies(employeeId);
   }
 }

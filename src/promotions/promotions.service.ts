@@ -46,8 +46,19 @@ export class PromotionsService {
         });
     }
 
-    async findAll() {
+    async findAll(employeeId?: string) {
+        const where: any = {};
+        
+        if (employeeId) {
+            where.company = {
+                employees: {
+                    some: { employeeId }
+                }
+            };
+        }
+
         const promotions = await this.databaseService.promotions.findMany({
+            where,
             include: {
                 company: {
                     select: {

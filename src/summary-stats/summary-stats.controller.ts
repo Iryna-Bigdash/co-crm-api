@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { SummaryStatsService } from './summary-stats.service';
 
@@ -10,8 +10,8 @@ export class SummaryStatsController {
 
     @Throttle({ short: { ttl: 1000, limit: 10 } })
     @Get()
-    find() {
-        return this.summaryStatsService.getSummaryStats();
+    find(@Query('employeeId') employeeId?: string) {
+        return this.summaryStatsService.getSummaryStats(employeeId);
     }
 
 }

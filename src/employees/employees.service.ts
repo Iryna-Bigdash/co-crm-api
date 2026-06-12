@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException, Injectable } from '@nestjs/common';
+import { BadRequestException, NotFoundException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from 'src/database/database.service';
 import * as shortid from 'shortid';
@@ -110,7 +110,19 @@ export class EmployeesService {
     }
 
     if (updateEmployeeDto.email && typeof updateEmployeeDto.email === 'string') {
-      await this.validateEmail(updateEmployeeDto.email);
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(updateEmployeeDto.email)) {
+        throw new BadRequestException('Invalid email format.');
+      }
+
+      const existingEmployeeByEmail = await this.databaseService.employee.findUnique({
+        where: { email: updateEmployeeDto.email },
+      });
+
+      if (existingEmployeeByEmail && existingEmployeeByEmail.id !== id) {
+        throw new BadRequestException('User with this email already exists');
+      }
     }
 
     if (updateEmployeeDto.name && typeof updateEmployeeDto.name === 'string') {
@@ -135,5 +147,85 @@ export class EmployeesService {
     return this.databaseService.employee.delete({
       where: { id },
     });
+  }
+
+  async validateCredentials({ email, password }: { email: string; password: string }) {
+    const employee = await this.databaseService.employee.findUnique({ where: { email } });
+    if (!employee) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    const isValid = await bcrypt.compare(password, employee.password);
+    if (!isValid) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    
+    return { 
+      id: employee.id, 
+      name: employee.name, 
+      email: employee.email, 
+      role: employee.role 
+    };
+  }
+
+  async assignCompany(employeeId: string, companyId: string) {
+    await this.ensureEmployeeExists(employeeId);
+    
+    const employee = await this.databaseService.employee.findUnique({ where: { id: employeeId } });
+    if (employee.role !== 'MANAGER') {
+      throw new BadRequestException('Only managers can be assigned companies');
+    }
+
+    const existingAssignment = await this.databaseService.employeeCompany.findUnique({
+      where: { employeeId_companyId: { employeeId, companyId } }
+    });
+
+    if (existingAssignment) {
+      throw new BadRequestException('Company already assigned to this manager');
+    }
+    
+    return this.databaseService.employeeCompany.create({
+      data: { employeeId, companyId }
+    });
+  }
+
+  async unassignCompany(employeeId: string, companyId: string) {
+    await this.ensureEmployeeExists(employeeId);
+
+    return this.databaseService.employeeCompany.delete({
+      where: { employeeId_companyId: { employeeId, companyId } }
+    });
+  }
+
+  async getAssignedCompanies(employeeId: string) {
+    await this.ensureEmployeeExists(employeeId);
+
+    const assignments = await this.databaseService.employeeCompany.findMany({
+      where: { employeeId },
+      include: { 
+        company: { 
+          include: { 
+            category: true, 
+            country: true 
+          } 
+        } 
+      }
+    });
+    
+    return assignments.map(a => ({
+      id: a.company.id,
+      title: a.company.title,
+      description: a.company.description,
+      status: a.company.status,
+      joinedDate: a.company.joinedDate,
+      hasPromotions: a.company.hasPromotions,
+      avatar: a.company.avatar,
+      categoryId: a.company.categoryId,
+      categoryTitle: a.company.category.title,
+      countryId: a.company.countryId,
+      countryTitle: a.company.country.name,
+      createdAt: a.company.createdAt,
+      updatedAT: a.company.updatedAT,
+    }));
   }
 }

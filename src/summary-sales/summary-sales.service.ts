@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class SummarySalesService {
+  constructor(private readonly databaseService: DatabaseService) {}
+
   private sales = [
     {
       id: 'OtAYnQD6W',
@@ -26,7 +29,20 @@ export class SummarySalesService {
     }
   ];
 
-  findAll() {
-    return this.sales;
+  async findAll(employeeId?: string) {
+    if (!employeeId) {
+      return this.sales;
+    }
+
+    // Get list of company IDs assigned to this manager
+    const assignments = await this.databaseService.employeeCompany.findMany({
+      where: { employeeId },
+      select: { companyId: true }
+    });
+
+    const companyIds = assignments.map(a => a.companyId);
+
+    // Filter sales data by assigned companies
+    return this.sales.filter(sale => companyIds.includes(sale.companyId));
   }
 }

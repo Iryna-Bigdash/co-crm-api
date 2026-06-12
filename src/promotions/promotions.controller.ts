@@ -20,7 +20,10 @@ export class PromotionsController {
     }
 
     @Get()
-    async find(@Query('title') title?: string) {
+    async find(
+        @Query('title') title?: string,
+        @Query('employeeId') employeeId?: string
+    ) {
         if (title) {
             const company = await this.companyService.findByTitle(title);
 
@@ -31,7 +34,7 @@ export class PromotionsController {
             throw new NotFoundException('Company not found');
         }
 
-        return this.promotionsService.findAll();
+        return this.promotionsService.findAll(employeeId);
     }
 
     @Get('company/:companyId')

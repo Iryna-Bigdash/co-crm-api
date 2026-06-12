@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { SummarySalesService } from './summary-sales.service';
 
 @Controller('summary-sales')
@@ -7,7 +7,7 @@ export class SummarySalesController {
 
 
     @Get()
-    find() {
-        return this.summarySalesService.findAll();
+    find(@Query('employeeId') employeeId?: string) {
+        return this.summarySalesService.findAll(employeeId);
     }
 }

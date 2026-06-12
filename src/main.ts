@@ -34,7 +34,15 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
   // Вмикаємо CORS (дозволяємо запити з інших доменів)
-  app.enableCors();
+  app.enableCors({
+    origin: [
+      'http://localhost:3001',
+      'https://co-crm.vercel.app',
+      'https://co-crm-git-main-iryna-bigdashs-projects.vercel.app',
+      /\.vercel\.app$/,
+    ],
+    credentials: true,
+  });
 
   // Встановлюємо глобальний префікс для усіх роутів
   app.setGlobalPrefix('api');

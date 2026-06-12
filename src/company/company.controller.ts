@@ -17,15 +17,22 @@ export class CompanyController {
 
   @Throttle({ short: { ttl: 1000, limit: 10 } })
   @Post()
-  create(@Body() createCompanyDto: CreateCompanyDto) {
-    return this.companyService.create(createCompanyDto);
+  create(
+    @Body() createCompanyDto: CreateCompanyDto,
+    @Query('employeeId') employeeId?: string,
+  ) {
+    return this.companyService.create(createCompanyDto, employeeId);
   }
 
   @SkipThrottle({ default: false })
   @Get()
-  findAll(@Ip() ip: string, @Query('status') status?: CompanyStatus) {
+  findAll(
+    @Ip() ip: string, 
+    @Query('status') status?: CompanyStatus,
+    @Query('employeeId') employeeId?: string,
+  ) {
     this.logger.log(`Request for ALL Companies from IP: ${ip}`, CompanyController.name);
-    return this.companyService.findAll(status);
+    return this.companyService.findAll(status, employeeId);
   }
 
   @Throttle({ short: { ttl: 1000, limit: 10 } })

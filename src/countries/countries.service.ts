@@ -19,7 +19,15 @@ export class CountriesService {
     return country ? country.id : null;
   }
 
-  async getCountriesWithCompanyCounts() {
+  async getCountriesWithCompanyCounts(employeeId?: string) {
+    const where: any = {};
+    
+    if (employeeId) {
+      where.employees = {
+        some: { employeeId }
+      };
+    }
+
     return this.databaseService.country.findMany({
       select: {
         id: true,
@@ -27,7 +35,11 @@ export class CountriesService {
         latitude: true,
         longitude: true,
         _count: {
-          select: { companies: true }
+          select: { 
+            companies: {
+              where
+            }
+          }
         },
       },
     });

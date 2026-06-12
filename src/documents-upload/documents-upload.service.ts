@@ -7,9 +7,14 @@ export class DocumentsUploadService {
   private readonly uploadDir = join(process.cwd(), 'uploads', 'documents');
 
   getFileResponse(filename: string) {
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const baseUrl = isDevelopment
+      ? 'http://localhost:3000'
+      : 'https://api-yho4.onrender.com';
+    
     return {
       filename,
-      url: `/uploads/documents/${filename}`, // саме так, бо роздається як статична папка
+      url: `${baseUrl}/uploads/documents/${filename}`,
     };
   }
 

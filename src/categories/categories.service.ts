@@ -75,10 +75,18 @@ export class CategoriesService {
     };
   }
 
-  async getCategoriesWithCompanyCounts() {
+  async getCategoriesWithCompanyCounts(employeeId?: string) {
+    const where: any = {};
+    
+    if (employeeId) {
+      where.employees = {
+        some: { employeeId }
+      };
+    }
 
     const groupedCompanies = await this.databaseService.company.groupBy({
       by: ['categoryId'],
+      where,
       _count: {
         categoryId: true,
       },

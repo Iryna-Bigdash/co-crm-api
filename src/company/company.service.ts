@@ -45,7 +45,7 @@ export class CompanyService {
 
 
 
-  async create(createCompanyDto: CreateCompanyDto) {
+  async create(createCompanyDto: CreateCompanyDto, employeeId?: string) {
     const { categoryId, countryId, ...companyData } = createCompanyDto;
 
     await this.ensureCountryExists(countryId);
@@ -64,14 +64,44 @@ export class CompanyService {
       },
     };
 
-    return this.databaseService.company.create({
+    const createdCompany = await this.databaseService.company.create({
       data: newCompany,
     });
+
+    // Auto-assign company to manager if employeeId is provided
+    if (employeeId) {
+      const employee = await this.databaseService.employee.findUnique({
+        where: { id: employeeId },
+      });
+
+      if (employee && employee.role === 'MANAGER') {
+        await this.databaseService.employeeCompany.create({
+          data: {
+            employeeId,
+            companyId: createdCompany.id,
+          },
+        });
+      }
+    }
+
+    return createdCompany;
   }
 
-async findAll(status?: CompanyStatus) {
+async findAll(status?: CompanyStatus, employeeId?: string) {
+  const where: any = {};
+  
+  if (status) {
+    where.status = status;
+  }
+  
+  if (employeeId) {
+    where.employees = {
+      some: { employeeId }
+    };
+  }
+
   const companies = await this.databaseService.company.findMany({
-    where: status ? { status } : undefined,
+    where,
     include: {
       category: { select: { title: true } },
       country:  { select: { name: true } },

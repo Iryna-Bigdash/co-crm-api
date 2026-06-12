@@ -20,8 +20,8 @@ export class CategoriesController {
   }
 
   @Get('/with-companies')
-  async getCategoriesWithCompanyCounts() {
-    return this.categoriesService.getCategoriesWithCompanyCounts();
+  async getCategoriesWithCompanyCounts(@Query('employeeId') employeeId?: string) {
+    return this.categoriesService.getCategoriesWithCompanyCounts(employeeId);
   }
 
   @Get(':id')

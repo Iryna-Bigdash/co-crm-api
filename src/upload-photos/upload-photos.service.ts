@@ -5,9 +5,14 @@ import { join } from 'path';
 @Injectable()
 export class UploadService {
   getFileResponse(filename: string) {
+    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const baseUrl = isDevelopment
+      ? 'http://localhost:3000'
+      : 'https://api-yho4.onrender.com';
+    
     return {
       filename,
-      path: `/uploads/${filename}`,
+      path: `${baseUrl}/uploads/${filename}`,
     };
   }
 

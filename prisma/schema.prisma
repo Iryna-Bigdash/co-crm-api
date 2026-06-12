@@ -59,10 +59,10 @@ model Promotions {
 }
 
 model EmployeeCompany {
-  employee   Employee @relation(fields: [employeeId], references: [id])
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
   employeeId String
 
-  company   Company @relation(fields: [companyId], references: [id])
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
   companyId String
 
   @@id([employeeId, companyId])

@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { CountriesService } from './countries.service';
 
 
@@ -12,7 +12,7 @@ export class CountriesController {
   }
 
   @Get('/with-companies')
-  async getCountriesWithCompanyCounts() {
-    return this.countriesService.getCountriesWithCompanyCounts();
+  async getCountriesWithCompanyCounts(@Query('employeeId') employeeId?: string) {
+    return this.countriesService.getCountriesWithCompanyCounts(employeeId);
   }
 }
