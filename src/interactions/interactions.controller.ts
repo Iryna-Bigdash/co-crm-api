@@ -6,6 +6,7 @@ import {
   import { CreateInteractionDto } from './dto/create-interaction.dto';
   import { UpdateInteractionDto } from './dto/update-interaction.dto';
   import { ListInteractionsDto } from './dto/list-interactions.dto';
+  import { CalendarInteractionsDto } from './dto/calendar-interactions.dto';
   
   @Controller('interactions')
   @UsePipes(new ValidationPipe({ whitelist: true, transform: true }))
@@ -21,10 +22,10 @@ import {
       return this.service.create(companyId, dto);
     }
   
-    /** отримати всі interactions */
+    /** отримати interactions для календаря */
     @Get()
-    findAll() {
-      return this.service.findAll();
+    findAll(@Query() q: CalendarInteractionsDto) {
+      return this.service.findAll(q);
     }
 
     @Get('company/:companyId')

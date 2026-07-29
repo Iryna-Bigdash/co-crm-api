@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './users/users.module';
 import { DatabaseModule } from './database/database.module';
 import { EmployeesModule } from './employees/employees.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
@@ -19,10 +18,10 @@ import { SummarySalesModule } from './summary-sales/summary-sales.module';
 import { UploadModule } from './upload-photos/upload-photos.module';
 import { DocumentsUploadModule } from './documents-upload/documents-upload.module';
 import { InteractionsModule } from './interactions/interactions.module';
+import { ApiKeyGuard } from './guards/api-key.guard';
  
 @Module({
   imports: [
-    UsersModule,
     CompanyModule, 
     DatabaseModule, 
     EmployeesModule, 
@@ -40,11 +39,14 @@ import { InteractionsModule } from './interactions/interactions.module';
       ttl: 60000,
       limit: 50
     },
-  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule, SummarySalesModule, UploadModule, DocumentsUploadModule, InteractionsModule ],
+  ]), MyLoggerModule, CategoriesModule, CountriesModule, SummaryStatsModule, SummarySalesModule, InteractionsModule ],
   controllers: [AppController, CategoriesController],
   providers: [AppService, {
-    provide:APP_GUARD,
-    useClass:ThrottlerGuard
+    provide: APP_GUARD,
+    useClass: ThrottlerGuard,
+  }, {
+    provide: APP_GUARD,
+    useClass: ApiKeyGuard,
   }, CategoriesService],
 })
 export class AppModule {}

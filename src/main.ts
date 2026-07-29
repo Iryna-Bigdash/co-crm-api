@@ -1,57 +1,57 @@
-// import { NestFactory, HttpAdapterHost } from '@nestjs/core';
-// import { AppModule } from './app.module';
-// import { AllExceptionsFilter } from './all-exceptions.filter';
-
-// async function bootstrap() {
-//   const app = await NestFactory.create(AppModule); 
-
-//   const { httpAdapter } = app.get(HttpAdapterHost)
-//   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter))
-
-//   app.enableCors()
-//   app.setGlobalPrefix('api')
-//   await app.listen(3000);
-// }
-// bootstrap();
-
-
 import { NestFactory, HttpAdapterHost } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AllExceptionsFilter } from './all-exceptions.filter';
 
+function parseCorsOrigins(): (string | RegExp)[] {
+  const fromEnv = process.env.CORS_ORIGINS?.split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+  if (fromEnv?.length) {
+    return fromEnv;
+  }
+
+  return [
+    'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    /\.vercel\.app$/,
+  ];
+}
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Роздаємо статичні файли з папки uploads (наприклад, для файлів, які завантажуються)
   app.useStaticAssets(join(process.cwd(), 'uploads'), {
     prefix: '/uploads/',
   });
 
-  // Підключаємо глобальний фільтр обробки помилок
   const { httpAdapter } = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
-  // Вмикаємо CORS (дозволяємо запити з інших доменів)
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
   app.enableCors({
-    origin: [
-      'http://localhost:3001',
-      'https://co-crm.vercel.app',
-      'https://co-crm-git-main-iryna-bigdashs-projects.vercel.app',
-      /\.vercel\.app$/,
-    ],
+    origin: parseCorsOrigins(),
     credentials: true,
   });
 
-  // Встановлюємо глобальний префікс для усіх роутів
   app.setGlobalPrefix('api');
 
-  // Визначаємо порт із змінних середовища або дефолтний 3000
-  const PORT = process.env.PORT || 3000;
-  await app.listen(PORT);
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
 
-  console.log(`🚀 Server started on http://localhost:${PORT}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Server started on port ${port}`);
+  }
 }
-bootstrap();
 
+bootstrap();

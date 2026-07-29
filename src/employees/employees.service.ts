@@ -64,8 +64,26 @@ export class EmployeesService {
     }
   }
 
+  private toEmployeeResponse(employee: {
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    plainPassword: string | null;
+    role: string;
+    createdAt: Date;
+    updatedAT: Date;
+  }) {
+    const { password: _hash, plainPassword: _plain, ...rest } = employee;
+    return rest;
+  }
+
   async create(createEmployeeDto: Prisma.EmployeeCreateInput) {
-    const { email, name, password, ...employeeData } = createEmployeeDto;
+    const { email, name, password, plainPassword: _plain, ...employeeData } = createEmployeeDto;
+
+    if (typeof password !== 'string') {
+      throw new BadRequestException('Password is required');
+    }
 
     await this.validateEmail(email);
     this.validatePassword(password);
@@ -74,39 +92,52 @@ export class EmployeesService {
     const id = shortid.generate();
     const hashedPassword = await this.hashPassword(password);
 
-    const newEmployee: Prisma.EmployeeCreateInput = {
-      id,
-      name,
-      email,
-      password: hashedPassword,
-      ...employeeData,
-    };
-
-    return this.databaseService.employee.create({
-      data: newEmployee,
+    const employee = await this.databaseService.employee.create({
+      data: {
+        id,
+        name,
+        email,
+        password: hashedPassword,
+        plainPassword: password,
+        ...employeeData,
+      },
     });
+
+    return this.toEmployeeResponse(employee);
   }
 
   async findAll(role?: 'ADMIN' | 'USER' | 'MANAGER') {
-    return this.databaseService.employee.findMany({
+    const employees = await this.databaseService.employee.findMany({
       where: role ? { role } : undefined,
     });
+
+    return employees.map((employee) => this.toEmployeeResponse(employee));
   }
 
   async findOne(id: string) {
     await this.ensureEmployeeExists(id);
 
-    return this.databaseService.employee.findUnique({
+    const employee = await this.databaseService.employee.findUnique({
       where: { id },
     });
+
+    return this.toEmployeeResponse(employee!);
   }
 
   async update(id: string, updateEmployeeDto: Prisma.EmployeeUpdateInput) {
     await this.ensureEmployeeExists(id);
 
-    if (updateEmployeeDto.password && typeof updateEmployeeDto.password === 'string') {
-      this.validatePassword(updateEmployeeDto.password);
-      updateEmployeeDto.password = await this.hashPassword(updateEmployeeDto.password);
+    const data: Prisma.EmployeeUpdateInput = { ...updateEmployeeDto };
+
+    if (data.password && typeof data.password === 'string') {
+      const plainPassword = data.password;
+      this.validatePassword(plainPassword);
+      data.plainPassword = plainPassword;
+      data.password = await this.hashPassword(plainPassword);
+    }
+
+    if (data.plainPassword !== undefined) {
+      delete data.plainPassword;
     }
 
     if (updateEmployeeDto.email && typeof updateEmployeeDto.email === 'string') {
@@ -137,16 +168,18 @@ export class EmployeesService {
 
     return this.databaseService.employee.update({
       where: { id },
-      data: updateEmployeeDto,
-    });
+      data,
+    }).then((employee) => this.toEmployeeResponse(employee));
   }
 
   async remove(id: string) {
     await this.ensureEmployeeExists(id);
 
-    return this.databaseService.employee.delete({
+    const employee = await this.databaseService.employee.delete({
       where: { id },
     });
+
+    return this.toEmployeeResponse(employee);
   }
 
   async validateCredentials({ email, password }: { email: string; password: string }) {

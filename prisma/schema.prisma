@@ -9,13 +9,14 @@ datasource db {
 }
 
 model Employee {
-  id        String   @id @unique @default(uuid())
-  name      String   @unique
-  email     String   @unique
-  password  String
-  role      Role
-  createdAt DateTime @default(now())
-  updatedAT DateTime @updatedAt
+  id            String   @id @unique @default(uuid())
+  name          String   @unique
+  email         String   @unique
+  password      String
+  plainPassword String?
+  role          Role
+  createdAt     DateTime @default(now())
+  updatedAT     DateTime @updatedAt
 
   companies EmployeeCompany[]
 }

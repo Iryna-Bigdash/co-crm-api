@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import { join } from 'path';
+import { getPublicApiUrl } from 'src/utils/public-url';
 
 @Injectable()
 export class UploadService {
   getFileResponse(filename: string) {
-    const isDevelopment = process.env.NODE_ENV !== 'production';
-    const baseUrl = isDevelopment
-      ? 'http://localhost:3000'
-      : 'https://api-yho4.onrender.com';
+    const baseUrl = getPublicApiUrl();
     
     return {
       filename,
