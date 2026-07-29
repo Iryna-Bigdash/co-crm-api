@@ -4,6 +4,7 @@ import { Prisma, Role } from '@prisma/client';
 import { Throttle } from '@nestjs/throttler';
 import { MyLoggerService } from 'src/my-logger/my-logger.service';
 import { Public } from 'src/decorators/public.decorator';
+import { LoginDto } from './dto/login.dto';
 
 
 @Controller('employees')
@@ -20,7 +21,7 @@ export class EmployeesController {
   @Public()
   @Throttle({ short: { ttl: 60000, limit: 10 } })
   @Post('login')
-  async login(@Body() loginDto: { email: string; password: string }) {
+  async login(@Body() loginDto: LoginDto) {
     return this.employeesService.validateCredentials(loginDto);
   }
 
